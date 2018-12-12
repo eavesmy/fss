@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var PATH string
@@ -22,8 +24,18 @@ func main() {
 }
 
 func run() error {
-	fmt.Println("File server start at http://127.0.0.1:" + fmt.Sprintf("%d", port))
-	err := http.ListenAndServe(":"+fmt.Sprintf("%d", port), http.FileServer(http.Dir(PATH)))
+
+	addrs, err := net.InterfaceAddrs()
+
+	if err != nil {
+		fmt.Println("File server start error: ", err)
+		return nil
+	}
+
+	inet := addrs[1]
+
+	fmt.Println("File server start at " + strings.Split(inet.String(), "/")[0] + ":" + fmt.Sprintf("%d", port))
+	err = http.ListenAndServe(":"+fmt.Sprintf("%d", port), http.FileServer(http.Dir(PATH)))
 
 	if err != nil {
 		fmt.Println("File server start error: ", err)
