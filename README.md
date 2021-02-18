@@ -3,4 +3,4 @@
 ##### Simple file server.
     
 ### Usage
-##### ./ffs [path]
+##### ./ffs -p [port] -d [dir]

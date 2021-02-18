@@ -1,24 +1,24 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 )
 
-var PATH string
-var port = 9989
+var Path string
+var Port int
 
 func main() {
 
-	if len(os.Args) < 2 {
-		PATH = "./"
-	} else {
-		PATH, _ = filepath.Abs(os.Args[1])
-	}
+	flag.IntVar(&Port, "p", 9989, "-p 80")
+	flag.StringVar(&Path, "d", "./", "-d ./")
+	flag.Parse()
+
+	Path, _ = filepath.Abs(Path)
 
 	run()
 }
@@ -34,14 +34,14 @@ func run() error {
 
 	inet := addrs[1]
 
-	fmt.Println("File server start at " + strings.Split(inet.String(), "/")[0] + ":" + fmt.Sprintf("%d", port))
-	err = http.ListenAndServe(":"+fmt.Sprintf("%d", port), http.FileServer(http.Dir(PATH)))
+	fmt.Println("File server start at "+Path, strings.Split(inet.String(), "/")[0]+":"+fmt.Sprintf("%d", Port))
+	err = http.ListenAndServe(":"+fmt.Sprintf("%d", Port), http.FileServer(http.Dir(Path)))
 
 	if err != nil {
 		fmt.Println("File server start error: ", err)
 		fmt.Println("Reset port ...")
 
-		port++
+		Port++
 		return run()
 	}
 
