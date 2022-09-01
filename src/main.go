@@ -7,18 +7,19 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/eavesmy/fss/src/service"
 )
 
-var Path string
 var Port int
 
 func main() {
 
 	flag.IntVar(&Port, "p", 9989, "-p 80")
-	flag.StringVar(&Path, "d", "./", "-d ./")
+	flag.StringVar(&service.Path, "d", "./", "-d ./")
 	flag.Parse()
 
-	Path, _ = filepath.Abs(Path)
+	service.Path, _ = filepath.Abs(service.Path)
 
 	run()
 }
@@ -34,8 +35,9 @@ func run() error {
 
 	inet := addrs[1]
 
-	fmt.Println("File server start at "+Path, strings.Split(inet.String(), "/")[0]+":"+fmt.Sprintf("%d", Port))
-	err = http.ListenAndServe(":"+fmt.Sprintf("%d", Port), http.FileServer(http.Dir(Path)))
+	fmt.Println("File server start at "+service.Path, strings.Split(inet.String(), "/")[0]+":"+fmt.Sprintf("%d", Port))
+
+	err = http.ListenAndServe(":"+fmt.Sprintf("%d", Port), service.HttpHandler{})
 
 	if err != nil {
 		fmt.Println("File server start error: ", err)
@@ -46,4 +48,8 @@ func run() error {
 	}
 
 	return nil
+}
+
+func handleLogin() {
+
 }
